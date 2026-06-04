@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>HelpDesk Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+:root{
+  --bg:#f4f3ef;
+  --surface:#ffffff;
+  --surface2:#f9f8f5;
+  --border:#e8e6e0;
+  --border2:#d4d1c8;
+  --text:#1a1916;
+  --text2:#6b6860;
+  --text3:#9e9b94;
+  --accent:#2563eb;
+  --accent-light:#eff4ff;
+  --accent-dark:#1d4ed8;
+  --green:#16a34a;
+  --green-light:#f0fdf4;
+  --amber:#d97706;
+  --amber-light:#fffbeb;
+  --red:#dc2626;
+  --red-light:#fef2f2;
+  --violet:#7c3aed;
+  --violet-light:#f5f3ff;
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px;
+  --shadow:0 1px 4px rgba(0,0,0,.06),0 2px 12px rgba(0,0,0,.04);
+  --font:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+@media(prefers-color-scheme:dark){
+:root{
+  --bg:#111110;--surface:#1c1b19;--surface2:#232220;
+  --border:#2e2d2a;--border2:#3d3c38;
+  --text:#f5f4f0;--text2:#9e9b94;--text3:#6b6860;
+  --accent:#4f86f7;--accent-light:#1a2540;--accent-dark:#6b9bfa;
+  --green:#4ade80;--green-light:#0a1f0f;
+  --amber:#fbbf24;--amber-light:#1c1200;
+  --red:#f87171;--red-light:#1f0a0a;
+  --violet:#a78bfa;--violet-light:#160f2a;
+}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:76px;font-size:15px}
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
+.auth-logo{width:64px;height:64px;background:var(--accent);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;margin-bottom:20px}
+.auth-title{font-size:24px;font-weight:600;margin-bottom:6px;text-align:center}
+.auth-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:32px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px;width:100%}
+.auth-tabs{display:flex;gap:4px;background:var(--surface2);border-radius:var(--r-sm);padding:4px;margin-bottom:20px}
+.auth-tab{flex:1;text-align:center;padding:8px;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;border:none;background:none;color:var(--text2);transition:all .15s}
+.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:80}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
+.topbar-title{font-size:16px;font-weight:600}
+.topbar-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.topbar-right{display:flex;gap:6px}
+.icon-btn{width:36px;height:36px;border:1px solid var(--border);background:var(--surface2);border-radius:var(--r-sm);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:17px;transition:all .15s;position:relative}
+.icon-btn:active{background:var(--border)}
+.ndot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--surface)}
+/* SCREENS */
+.screen{display:none;padding:16px;animation:fadeUp .2s ease}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:80;padding-bottom:env(safe-area-inset-bottom)}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;color:var(--text3);font-size:10px;font-family:var(--font);gap:3px;transition:color .15s;position:relative}
+.bnav-item i{font-size:21px}
+.bnav-item.active{color:var(--accent)}
+.bnav-badge{position:absolute;top:7px;right:calc(50% - 18px);background:var(--red);color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;font-family:var(--mono)}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:10px}
+.card:active{box-shadow:var(--shadow)}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px}
+.stat-n{font-size:30px;font-weight:600;line-height:1;font-family:var(--mono)}
+.stat-l{font-size:11px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+.stat-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--border)}
+.stat-fill{height:100%;border-radius:2px;transition:width .8s ease}
+/* TICKET CARD */
+.tcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.tcard:active{border-color:var(--accent)}
+.tcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.tid{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tcard-title{font-size:14px;font-weight:500;line-height:1.4;margin-bottom:8px}
+.tcard-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--text2)}
+.tcard-meta i{font-size:13px;vertical-align:-2px;margin-right:2px}
+/* BADGES */
+.badge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;white-space:nowrap;font-family:var(--mono)}
+.b-open{background:var(--accent-light);color:var(--accent)}
+.b-pending{background:var(--amber-light);color:var(--amber)}
+.b-resolved{background:var(--green-light);color:var(--green)}
+.b-closed{background:var(--surface2);color:var(--text3)}
+.b-critical{background:var(--red-light);color:var(--red)}
+.b-high{background:#fff7ed;color:#c2570a}
+.b-medium{background:var(--amber-light);color:var(--amber)}
+.b-low{background:var(--green-light);color:var(--green)}
+/* SEARCH + FILTERS */
+.search-row{display:flex;gap:8px;margin-bottom:12px}
+.search-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px}
+.search-box i{color:var(--text3);font-size:17px;flex-shrink:0}
+.search-box input{border:none;outline:none;background:none;flex:1;font-size:14px;color:var(--text);font-family:var(--font)}
+.search-box input::placeholder{color:var(--text3)}
+.filter-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:14px;scrollbar-width:none}
+.filter-scroll::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all .15s;font-family:var(--font)}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* FORM */
+.flabel{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.4px}
+.finput{width:100%;padding:11px 13px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);font-size:14px;color:var(--text);font-family:var(--font);outline:none;transition:border-color .15s;margin-bottom:14px}
+.finput:focus{border-color:var(--accent)}
+textarea.finput{resize:vertical;min-height:90px}
+select.finput{-webkit-appearance:none}
+.form-group{margin-bottom:14px}
+.form-group .flabel{margin-bottom:5px}
+.form-group .finput{margin-bottom:0}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:var(--font);width:100%}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:active{background:var(--accent-dark)}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-ghost{background:none;border:1px solid var(--border);color:var(--text2)}
+.btn-ghost:active{background:var(--surface2)}
+.btn-sm{padding:8px 14px;font-size:12px;width:auto}
+.btn-row{display:flex;gap:8px;margin-top:12px}
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{background:var(--surface);border-radius:22px 22px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:0 0 40px;animation:sheetUp .25s ease}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:14px auto 18px}
+.sheet-head{padding:0 16px 16px;border-bottom:1px solid var(--border)}
+.sheet-body{padding:16px}
+/* DETAIL ROWS */
+.drow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.drow:last-child{border-bottom:none}
+.dlabel{color:var(--text3);flex-shrink:0}
+.dval{font-weight:500;text-align:right;max-width:62%}
+/* TIMELINE */
+.tl{padding-left:18px;border-left:2px solid var(--border)}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{position:absolute;left:-24px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+.tl-time{font-size:10px;color:var(--text3);margin-bottom:2px;font-family:var(--mono)}
+.tl-text{font-size:13px;line-height:1.5}
+/* NOTIFICATION */
+.notif{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;margin-bottom:8px;display:flex;gap:10px}
+.notif.unread{border-left:3px solid var(--accent)}
+.nicon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ntext{font-size:13px;line-height:1.5;flex:1}
+.ntime{font-size:11px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
+/* PRIORITY TAG */
+.ptag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500}
+.pdot{width:7px;height:7px;border-radius:50%}
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.qa{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;text-align:center;transition:border-color .15s}
+.qa:active{border-color:var(--accent)}
+.qa-icon{width:46px;height:46px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:22px}
+.qa-label{font-size:13px;font-weight:500}
+.qa-sub{font-size:11px;color:var(--text3)}
+/* SECTION */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:4px}
+.sec-title{font-size:14px;font-weight:600;letter-spacing:.1px}
+.sec-action{font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--font)}
+/* AVATAR */
+.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+/* ROLE PILL */
+.role-pill{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
+.role-it{background:var(--accent-light);color:var(--accent)}
+.role-emp{background:var(--violet-light);color:var(--violet)}
+/* APPROVAL */
+.apr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-bottom:10px}
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--surface2);border-radius:var(--r-sm);padding:4px;margin-bottom:14px}
+.tab{flex:1;text-align:center;padding:8px 4px;font-size:12px;font-weight:500;cursor:pointer;border-radius:6px;border:none;background:none;color:var(--text3);transition:all .15s;font-family:var(--font)}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:24px;color:var(--text3);font-size:13px}
+.spin{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);border-top-color:var(--accent);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty i{font-size:44px;margin-bottom:10px;display:block}
+.empty p{font-size:13px}
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;pointer-events:none;white-space:nowrap;transition:opacity .3s;font-family:var(--font)}
+/* PROGRESS BAR */
+.sla-bar{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.sla-fill{height:100%;border-radius:2px;transition:width .6s}
+/* EMPLOYEE VIEW TOGGLE */
+.view-toggle{display:flex;gap:6px;margin-bottom:16px;align-items:center;font-size:13px;color:var(--text2)}
+.vt-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
+.vt-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* PROFILE CARD */
+.profile-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px;margin-bottom:16px;text-align:center}
+.profile-av{width:68px;height:68px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;margin:0 auto 12px}
+</style>
+</head>
+<body>
+
+<!-- ===== AUTH SCREEN ===== -->
+<div id="auth-screen" class="auth-wrap">
+  <div class="auth-logo"><i class="ti ti-headset" aria-hidden="true"></i></div>
+  <div class="auth-title">HelpDesk Pro</div>
+  <div class="auth-sub">Your organization's IT support system</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="setAuthTab('login',this)">Sign In</button>
+      <button class="auth-tab" onclick="setAuthTab('register',this)">Register</button>
+    </div>
+    <div id="auth-login">
+      <div class="form-group"><label class="flabel">Email</label><input class="finput" type="email" id="l-email" placeholder="you@company.com"/></div>
+      <div class="form-group"><label class="flabel">Password</label><input class="finput" type="password" id="l-pass" placeholder="••••••••"/></div>
+      <div id="l-err" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
+      <button class="btn btn-primary" onclick="doLogin()"><i class="ti ti-login"></i> Sign In</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--text3)">Demo: <b>admin@org.com</b> / <b>admin</b> &nbsp;|&nbsp; <b>user@org.com</b> / <b>user</b></div>
+    </div>
+    <div id="auth-register" style="display:none">
+      <div class="form-group"><label class="flabel">Full Name</label><input class="finput" type="text" id="r-name" placeholder="Your name"/></div>
+      <div class="form-group"><label class="flabel">Email</label><input class="finput" type="email" id="r-email" placeholder="you@company.com"/></div>
+      <div class="form-group"><label class="flabel">Password</label><input class="finput" type="password" id="r-pass" placeholder="Min 6 characters"/></div>
+      <div class="form-group"><label class="flabel">Role</label>
+        <select class="finput" id="r-role">
+          <option value="employee">Employee (submit tickets)</option>
+          <option value="it">IT Technician (manage tickets)</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="flabel">Department</label><input class="finput" type="text" id="r-dept" placeholder="e.g. Finance, HR, Engineering"/></div>
+      <div id="r-err" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
+      <button class="btn btn-primary" onclick="doRegister()"><i class="ti ti-user-plus"></i> Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app" style="display:none">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo"><i class="ti ti-headset" aria-hidden="true"></i></div>
+    <div>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-sub" id="page-sub">HelpDesk Pro</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="gotoScreen('notifications')" aria-label="Notifications">
+      <i class="ti ti-bell"></i><span class="ndot" id="ndot" style="display:none"></span>
+    </button>
+    <button class="icon-btn" onclick="gotoScreen('profile')" aria-label="Profile">
+      <i class="ti ti-user-circle"></i>
+    </button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen active" id="screen-dashboard">
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" style="color:var(--accent)" id="s-open">0</div><div class="stat-l">Open</div><div class="stat-bar"><div class="stat-fill" id="sf-open" style="background:var(--accent);width:0%"></div></div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--amber)" id="s-pending">0</div><div class="stat-l">Pending</div><div class="stat-bar"><div class="stat-fill" id="sf-pending" style="background:var(--amber);width:0%"></div></div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--green)" id="s-resolved">0</div><div class="stat-l">Resolved</div><div class="stat-bar"><div class="stat-fill" id="sf-resolved" style="background:var(--green);width:0%"></div></div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--red)" id="s-critical">0</div><div class="stat-l">Critical</div><div class="stat-bar"><div class="stat-fill" id="sf-critical" style="background:var(--red);width:0%"></div></div></div>
+  </div>
+  <div class="qa-grid" id="qa-grid">
+    <div class="qa" onclick="gotoScreen('new-ticket')">
+      <div class="qa-icon" style="background:var(--accent-light);color:var(--accent)"><i class="ti ti-plus" aria-hidden="true"></i></div>
+      <div class="qa-label">New Ticket</div><div class="qa-sub">Submit a request</div>
+    </div>
+    <div class="qa" onclick="gotoScreen('approvals')" id="qa-approvals" style="display:none">
+      <div class="qa-icon" style="background:var(--amber-light);color:var(--amber)"><i class="ti ti-clipboard-check" aria-hidden="true"></i></div>
+      <div class="qa-label">Approvals</div><div class="qa-sub" id="qa-apr-count">— pending</div>
+    </div>
+    <div class="qa" onclick="gotoScreen('tickets')">
+      <div class="qa-icon" style="background:var(--violet-light);color:var(--violet)"><i class="ti ti-ticket" aria-hidden="true"></i></div>
+      <div class="qa-label" id="qa-tickets-label">My Tickets</div><div class="qa-sub">View & track</div>
+    </div>
+    <div class="qa" onclick="refreshAll()">
+      <div class="qa-icon" style="background:var(--green-light);color:var(--green)"><i class="ti ti-refresh" aria-hidden="true"></i></div>
+      <div class="qa-label">Refresh</div><div class="qa-sub">Sync data</div>
+    </div>
+  </div>
+  <div class="sec-head"><span class="sec-title">Recent Tickets</span><button class="sec-action" onclick="gotoScreen('tickets')">See all →</button></div>
+  <div id="dash-recent"></div>
+</div>
+
+<!-- TICKETS -->
+<div class="screen" id="screen-tickets">
+  <div class="search-row">
+    <div class="search-box">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <input type="text" placeholder="Search tickets…" id="tsearch" oninput="renderTickets()"/>
+    </div>
+  </div>
+  <div class="filter-scroll" id="status-chips">
+    <div class="chip active" onclick="setChip('all',this,'status-chips')">All</div>
+    <div class="chip" onclick="setChip('Open',this,'status-chips')">Open</div>
+    <div class="chip" onclick="setChip('Pending',this,'status-chips')">Pending</div>
+    <div class="chip" onclick="setChip('Resolved',this,'status-chips')">Resolved</div>
+    <div class="chip" onclick="setChip('Closed',this,'status-chips')">Closed</div>
+  </div>
+  <div class="filter-scroll" id="prio-chips">
+    <div class="chip active" onclick="setChip('all',this,'prio-chips')">All Priority</div>
+    <div class="chip" onclick="setChip('Critical',this,'prio-chips')">🔴 Critical</div>
+    <div class="chip" onclick="setChip('High',this,'prio-chips')">🟠 High</div>
+    <div class="chip" onclick="setChip('Medium',this,'prio-chips')">🟡 Medium</div>
+    <div class="chip" onclick="setChip('Low',this,'prio-chips')">🟢 Low</div>
+  </div>
+  <div id="tickets-list"></div>
+</div>
+
+<!-- NEW TICKET -->
+<div class="screen" id="screen-new-ticket">
+  <div class="card" style="margin-bottom:16px">
+    <div style="font-size:13px;color:var(--text2);line-height:1.6">Fill in the form below and our IT team will be notified immediately. You'll receive updates as your ticket progresses.</div>
+  </div>
+  <div class="form-group"><label class="flabel">Subject *</label><input class="finput" id="nt-subject" placeholder="Brief description of the issue"/></div>
+  <div class="form-group"><label class="flabel">Category *</label>
+    <select class="finput" id="nt-cat">
+      <option value="">Select a category</option>
+      <option>Hardware</option><option>Software</option><option>Network / Internet</option>
+      <option>Email / Outlook</option><option>Access & Permissions</option>
+      <option>Printer / Scanner</option><option>Phone / Mobile</option><option>Other</option>
+    </select>
+  </div>
+  <div class="form-group"><label class="flabel">Priority</label>
+    <select class="finput" id="nt-prio">
+      <option value="Low">Low – Not urgent</option><option value="Medium" selected>Medium – Normal</option>
+      <option value="High">High – Affecting work</option><option value="Critical">Critical – Full stop</option>
+    </select>
+  </div>
+  <div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="nt-desc" placeholder="Describe the issue in detail. Include steps to reproduce, error messages, affected devices…"></textarea></div>
+  <div class="form-group" id="nt-assign-grp" style="display:none"><label class="flabel">Assign To (optional)</label>
+    <select class="finput" id="nt-assign"><option value="">Unassigned</option></select>
+  </div>
+  <div id="nt-err" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
+  <button class="btn btn-primary" onclick="submitTicket()" id="nt-btn"><i class="ti ti-send"></i> Submit Ticket</button>
+</div>
+
+<!-- APPROVALS (IT only) -->
+<div class="screen" id="screen-approvals">
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('apr-pending',this)">Pending</button>
+    <button class="tab" onclick="setTab('apr-approved',this)">Approved</button>
+    <button class="tab" onclick="setTab('apr-rejected',this)">Rejected</button>
+  </div>
+  <div id="approvals-list"></div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div class="screen" id="screen-notifications">
+  <div id="notif-list"></div>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="screen-profile">
+  <div class="profile-card" id="profile-card"></div>
+  <div class="sec-title" style="margin-bottom:10px">Settings</div>
+  <div class="card" style="padding:0">
+    <div class="drow" style="padding:14px 16px;cursor:pointer" onclick="showThemeToggle()">
+      <span><i class="ti ti-palette" aria-hidden="true" style="margin-right:8px;color:var(--text3)"></i>Theme</span>
+      <span style="color:var(--text3);font-size:13px">Auto (System) <i class="ti ti-chevron-right" aria-hidden="true"></i></span>
+    </div>
+    <div class="drow" style="padding:14px 16px;cursor:pointer" onclick="doLogout()">
+      <span style="color:var(--red)"><i class="ti ti-logout" aria-hidden="true" style="margin-right:8px"></i>Sign Out</span>
+      <i class="ti ti-chevron-right" aria-hidden="true" style="color:var(--text3)"></i>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px;font-size:12px;color:var(--text3)">HelpDesk Pro v1.0 · All data stored locally</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav" aria-label="Main navigation">
+  <button class="bnav-item active" id="bn-dashboard" onclick="gotoScreen('dashboard')"><i class="ti ti-layout-dashboard"></i>Home</button>
+  <button class="bnav-item" id="bn-tickets" onclick="gotoScreen('tickets')"><i class="ti ti-ticket"></i>Tickets</button>
+  <button class="bnav-item" id="bn-new-ticket" onclick="gotoScreen('new-ticket')"><i class="ti ti-circle-plus" style="font-size:26px"></i></button>
+  <button class="bnav-item" id="bn-approvals" onclick="gotoScreen('approvals')" style="display:none"><i class="ti ti-clipboard-check"></i>Approvals<span class="bnav-badge" id="bn-apr-badge" style="display:none">0</span></button>
+  <button class="bnav-item" id="bn-profile" onclick="gotoScreen('profile')"><i class="ti ti-user-circle"></i>Profile</button>
+</nav>
+
+</div><!-- /app -->
+
+<!-- TICKET DETAIL MODAL -->
+<div class="modal" id="ticket-modal" onclick="modalBgClose(event)">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-head">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div class="tid" id="m-id"></div><div style="font-size:16px;font-weight:600;margin-top:5px;line-height:1.4" id="m-title"></div></div>
+        <span class="badge" id="m-status"></span>
+      </div>
+    </div>
+    <div class="sheet-body">
+      <div id="m-details"></div>
+      <div style="margin-top:18px">
+        <div class="sec-head"><span class="sec-title">Activity Log</span></div>
+        <div class="tl" id="m-timeline"></div>
+      </div>
+      <div id="m-it-actions" style="display:none">
+        <div style="margin-top:18px">
+          <div class="sec-head"><span class="sec-title">Update</span></div>
+          <textarea class="finput" id="m-note" placeholder="Add a note or update…" style="margin-bottom:8px"></textarea>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="changeStatus('Pending')">Mark Pending</button>
+            <button class="btn btn-success btn-sm" onclick="changeStatus('Resolved')">Resolve</button>
+            <button class="btn btn-primary btn-sm" onclick="addNote()" style="width:44px;padding:8px"><i class="ti ti-send"></i></button>
+          </div>
+        </div>
+        <div style="margin-top:18px">
+          <div class="sec-head"><span class="sec-title">Assign</span></div>
+          <div style="display:flex;gap:8px">
+            <select class="finput" id="m-assign" style="margin:0;flex:1"></select>
+            <button class="btn btn-primary btn-sm" onclick="assignTicket()" style="width:44px;padding:10px"><i class="ti ti-check"></i></button>
+          </div>
+        </div>
+        <div style="margin-top:18px">
+          <div class="sec-head"><span class="sec-title">SLA Status</span></div>
+          <div id="m-sla"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA STORE =====================
+const DB = {
+  get(k){ try{return JSON.parse(localStorage.getItem('hd_'+k))}catch{return null} },
+  set(k,v){ localStorage.setItem('hd_'+k, JSON.stringify(v)) },
+  del(k){ localStorage.removeItem('hd_'+k) }
+};
+
+function initData(){
+  if(!DB.get('users')){
+    DB.set('users',[
+      {id:'u1',name:'Admin IT',email:'admin@org.com',pass:'admin',role:'it',dept:'IT',created:Date.now()},
+      {id:'u2',name:'Priya Mehta',email:'user@org.com',pass:'user',role:'employee',dept:'Finance',created:Date.now()},
+      {id:'u3',name:'Raj Kumar',email:'raj@org.com',pass:'raj',role:'it',dept:'IT',created:Date.now()},
+      {id:'u4',name:'Sunita Verma',email:'sunita@org.com',pass:'sunita',role:'it',dept:'IT',created:Date.now()},
+    ]);
+  }
+  if(!DB.get('tickets')){
+    const now = Date.now();
+    DB.set('tickets',[
+      {id:'TKT-0001',subject:'Laptop not booting after Windows update',cat:'Hardware',prio:'High',status:'Open',requester:'u2',assignee:'u3',dept:'Finance',desc:'Black screen after forced update on HP EliteBook 840.',created:now-7200000,updated:now-3600000,notes:[{by:'u3',text:'Scheduled remote session for today 3 PM.',time:now-3000000}]},
+      {id:'TKT-0002',subject:'Unable to access shared drive \\\\fileserver\\projects',cat:'Network / Internet',prio:'Medium',status:'Pending',requester:'u2',assignee:'u4',dept:'Finance',desc:'Access denied when connecting to mapped drive after password change.',created:now-14400000,updated:now-7200000,notes:[]},
+      {id:'TKT-0003',subject:'VPN drops every 30 minutes for remote staff',cat:'Network / Internet',prio:'Critical',status:'Open',requester:'u2',assignee:'',dept:'IT',desc:'Multiple remote employees reporting unstable VPN connections.',created:now-86400000,updated:now-43200000,notes:[{by:'u1',text:'Investigating Cisco AnyConnect logs.',time:now-40000000}]},
+      {id:'TKT-0004',subject:'Printer P201 offline – 3rd floor',cat:'Printer / Scanner',prio:'Low',status:'Resolved',requester:'u2',assignee:'u3',dept:'HR',desc:'Canon printer showing offline in print queue.',created:now-172800000,updated:now-86400000,notes:[{by:'u3',text:'Restarted print spooler and reinstalled driver. Resolved.',time:now-86400000}]},
+      {id:'TKT-0005',subject:'New joiner account setup – Deepa Nair',cat:'Access & Permissions',prio:'Medium',status:'Open',requester:'u2',assignee:'u1',dept:'HR',desc:'Create AD, email and system accounts for new hire joining Monday.',created:now-43200000,updated:now-43200000,notes:[]},
+    ]);
+  }
+  if(!DB.get('approvals')){
+    DB.set('approvals',[
+      {id:'CHG-001',title:'Install TeamViewer on all workstations',requester:'u1',type:'Change Request',date:Date.now()-7200000,status:'pending',note:''},
+      {id:'CHG-002',title:'Upgrade firewall firmware to v7.2',requester:'u3',type:'Change Request',date:Date.now()-86400000,status:'pending',note:''},
+      {id:'PUR-001',title:'Purchase 5x Dell 27" monitors for Design team',requester:'u2',type:'Purchase',date:Date.now()-172800000,status:'approved',note:'Approved within budget.'},
+    ]);
+  }
+  if(!DB.get('notifs')) DB.set('notifs',[
+    {icon:'ti-alert-triangle',color:'red',text:'<b>SLA Breach:</b> TKT-0003 (VPN drops) has breached SLA.',time:Date.now()-600000,unread:true},
+    {icon:'ti-circle-check',color:'green',text:'<b>Resolved:</b> TKT-0004 (Printer offline) marked resolved.',time:Date.now()-3600000,unread:true},
+    {icon:'ti-clipboard-check',color:'amber',text:'<b>Approval needed:</b> CHG-001 awaits your approval.',time:Date.now()-7200000,unread:false},
+    {icon:'ti-user-plus',color:'accent',text:'<b>Assigned:</b> TKT-0005 assigned to you.',time:Date.now()-43200000,unread:false},
+  ]);
+}
+
+// ===================== AUTH =====================
+let currentUser = null;
+let authTab = 'login';
+
+function setAuthTab(tab, el){
+  authTab = tab;
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('auth-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('auth-register').style.display = tab==='register'?'block':'none';
+}
+
+function doLogin(){
+  const email = document.getElementById('l-email').value.trim().toLowerCase();
+  const pass = document.getElementById('l-pass').value;
+  const users = DB.get('users')||[];
+  const u = users.find(u=>u.email.toLowerCase()===email && u.pass===pass);
+  const err = document.getElementById('l-err');
+  if(!u){ err.textContent='Invalid email or password.'; err.style.display='block'; return; }
+  err.style.display='none';
+  currentUser = u;
+  DB.set('session', u.id);
+  launchApp();
+}
+
+function doRegister(){
+  const name = document.getElementById('r-name').value.trim();
+  const email = document.getElementById('r-email').value.trim().toLowerCase();
+  const pass = document.getElementById('r-pass').value;
+  const role = document.getElementById('r-role').value;
+  const dept = document.getElementById('r-dept').value.trim();
+  const err = document.getElementById('r-err');
+  if(!name||!email||!pass||!dept){ err.textContent='All fields are required.'; err.style.display='block'; return; }
+  if(pass.length < 6){ err.textContent='Password must be at least 6 characters.'; err.style.display='block'; return; }
+  const users = DB.get('users')||[];
+  if(users.find(u=>u.email.toLowerCase()===email)){ err.textContent='Email already registered.'; err.style.display='block'; return; }
+  err.style.display='none';
+  const u = {id:'u'+Date.now(),name,email,pass,role,dept,created:Date.now()};
+  users.push(u); DB.set('users',users);
+  currentUser = u; DB.set('session', u.id);
+  launchApp();
+}
+
+function doLogout(){
+  currentUser = null; DB.del('session');
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+}
+
+function launchApp(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  setupRoleUI();
+  refreshAll();
+  gotoScreen('dashboard');
+}
+
+function checkSession(){
+  const sid = DB.get('session');
+  if(sid){ const u = (DB.get('users')||[]).find(u=>u.id===sid); if(u){ currentUser=u; launchApp(); return; } }
+  document.getElementById('auth-screen').style.display='flex';
+}
+
+// ===================== ROLE UI =====================
+function setupRoleUI(){
+  const isIT = currentUser.role === 'it';
+  document.getElementById('qa-approvals').style.display = isIT ? '' : 'none';
+  document.getElementById('bn-approvals').style.display = isIT ? '' : 'none';
+  document.getElementById('qa-tickets-label').textContent = isIT ? 'All Tickets' : 'My Tickets';
+  document.getElementById('nt-assign-grp').style.display = isIT ? '' : 'none';
+  if(isIT){
+    const sel = document.getElementById('nt-assign');
+    sel.innerHTML = '<option value="">Unassigned</option>' +
+      (DB.get('users')||[]).filter(u=>u.role==='it').map(u=>`<option value="${u.id}">${u.name}</option>`).join('');
+  }
+  // Profile card
+  const initials = currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('profile-card').innerHTML = `
+    <div class="profile-av">${initials}</div>
+    <div style="font-size:17px;font-weight:600">${currentUser.name}</div>
+    <div style="font-size:13px;color:var(--text3);margin-top:4px">${currentUser.email}</div>
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:center">
+      <span class="badge ${currentUser.role==='it'?'b-open':'badge'}" style="${currentUser.role!=='it'?'background:var(--violet-light);color:var(--violet)':''}">${currentUser.role==='it'?'IT Technician':'Employee'}</span>
+      <span class="badge b-closed">${currentUser.dept}</span>
+    </div>`;
+}
+
+// ===================== NAVIGATION =====================
+const SCREENS = ['dashboard','tickets','new-ticket','approvals','notifications','profile'];
+const TITLES = {
+  dashboard:['Dashboard','HelpDesk Pro'],
+  tickets:['Tickets','View & manage'],
+  'new-ticket':['New Ticket','Submit a request'],
+  approvals:['Approvals','Pending actions'],
+  notifications:['Notifications','Recent alerts'],
+  profile:['My Profile','Account & settings'],
+};
+
+function gotoScreen(name){
+  SCREENS.forEach(s=>{
+    document.getElementById('screen-'+s)?.classList.toggle('active', s===name);
+    document.getElementById('bn-'+s)?.classList.toggle('active', s===name);
+  });
+  const t = TITLES[name]||['HelpDesk Pro',''];
+  document.getElementById('page-title').textContent = t[0];
+  document.getElementById('page-sub').textContent = t[1];
+  if(name==='tickets') renderTickets();
+  if(name==='approvals') renderApprovals();
+  if(name==='notifications') renderNotifications();
+}
+
+// ===================== CHIPS / TABS =====================
+const filters = {};
+function setChip(val, el, groupId){
+  filters[groupId] = val;
+  document.querySelectorAll('#'+groupId+' .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderTickets();
+}
+const tabStates = {};
+function setTab(key, el){
+  tabStates[key.split('-')[0]] = key.split('-')[1];
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if(key.startsWith('apr')) renderApprovals();
+}
+
+// ===================== HELPERS =====================
+function getUserName(id){ return (DB.get('users')||[]).find(u=>u.id===id)?.name || 'Unknown'; }
+function timeAgo(ts){
+  const d = Date.now()-ts; const m=60000,h=3600000,day=86400000;
+  if(d<m) return 'just now';
+  if(d<h) return Math.floor(d/m)+'m ago';
+  if(d<day) return Math.floor(d/h)+'h ago';
+  return Math.floor(d/day)+'d ago';
+}
+function nextId(){
+  const t = DB.get('tickets')||[];
+  const max = t.reduce((a,b)=>Math.max(a,parseInt(b.id.split('-')[1]||0)),0);
+  return 'TKT-'+(max+1).toString().padStart(4,'0');
+}
+function statusBadge(s){ const m={Open:'b-open',Pending:'b-pending',Resolved:'b-resolved',Closed:'b-closed'}; return`<span class="badge ${m[s]||'b-open'}">${s}</span>`; }
+function prioBadge(p){ const m={Critical:'b-critical',High:'b-high',Medium:'b-medium',Low:'b-low'}; return`<span class="badge ${m[p]||'b-medium'}">${p}</span>`; }
+function pdot(p){ const c={Critical:'var(--red)',High:'#e07b39',Medium:'var(--amber)',Low:'var(--green)'}; return`<span class="pdot" style="background:${c[p]||'var(--amber)'};display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px"></span>`; }
+function slaHours(p){ return {Critical:4,High:8,Medium:24,Low:72}[p]||24; }
+
+// ===================== DASHBOARD =====================
+function refreshAll(){
+  const tickets = DB.get('tickets')||[];
+  const mine = currentUser.role==='it' ? tickets : tickets.filter(t=>t.requester===currentUser.id);
+  const open = mine.filter(t=>t.status==='Open').length;
+  const pend = mine.filter(t=>t.status==='Pending').length;
+  const res = mine.filter(t=>t.status==='Resolved').length;
+  const crit = mine.filter(t=>t.prio==='Critical'&&t.status==='Open').length;
+  const total = mine.length || 1;
+  document.getElementById('s-open').textContent = open;
+  document.getElementById('s-pending').textContent = pend;
+  document.getElementById('s-resolved').textContent = res;
+  document.getElementById('s-critical').textContent = crit;
+  document.getElementById('sf-open').style.width = Math.round(open/total*100)+'%';
+  document.getElementById('sf-pending').style.width = Math.round(pend/total*100)+'%';
+  document.getElementById('sf-resolved').style.width = Math.round(res/total*100)+'%';
+  document.getElementById('sf-critical').style.width = Math.round(crit/total*100)+'%';
+  const aprPend = (DB.get('approvals')||[]).filter(a=>a.status==='pending').length;
+  document.getElementById('qa-apr-count').textContent = aprPend + ' pending';
+  const aprBadge = document.getElementById('bn-apr-badge');
+  if(aprPend>0 && currentUser.role==='it'){ aprBadge.textContent=aprPend; aprBadge.style.display='block'; }
+  else aprBadge.style.display='none';
+  const recent = mine.slice().sort((a,b)=>b.created-a.created).slice(0,4);
+  document.getElementById('dash-recent').innerHTML = recent.length ? recent.map(tCardHTML).join('') : '<div class="empty"><i class="ti ti-inbox" aria-hidden="true"></i><p>No tickets yet</p></div>';
+  const hasUnread = (DB.get('notifs')||[]).some(n=>n.unread);
+  document.getElementById('ndot').style.display = hasUnread ? 'block' : 'none';
+}
+
+// ===================== TICKET CARD =====================
+function tCardHTML(t){
+  const elapsed = Date.now()-t.created;
+  const slaMs = slaHours(t.prio)*3600000;
+  const slaPct = Math.min(100, Math.round(elapsed/slaMs*100));
+  const slaColor = slaPct>100?'var(--red)':slaPct>75?'var(--amber)':'var(--green)';
+  const breached = elapsed > slaMs && t.status !== 'Resolved' && t.status !== 'Closed';
+  return `<div class="tcard" onclick="openTicket('${t.id}')">
+    <div class="tcard-top">
+      <span class="tid">${t.id}${breached?` <span style="color:var(--red);font-size:10px">⚠ SLA</span>`:''}</span>
+      ${statusBadge(t.status)}
+    </div>
+    <div class="tcard-title">${t.subject}</div>
+    <div class="tcard-meta">
+      <span>${pdot(t.prio)}${t.prio}</span>
+      <span><i class="ti ti-folder" aria-hidden="true"></i>${t.cat}</span>
+      <span><i class="ti ti-clock" aria-hidden="true"></i>${timeAgo(t.created)}</span>
+      <span><i class="ti ti-user${t.assignee?'-check':''}"></i>${t.assignee?getUserName(t.assignee):'Unassigned'}</span>
+    </div>
+    <div class="sla-bar"><div class="sla-fill" style="width:${Math.min(100,slaPct)}%;background:${slaColor}"></div></div>
+  </div>`;
+}
+
+// ===================== TICKETS SCREEN =====================
+function renderTickets(){
+  const tickets = DB.get('tickets')||[];
+  const isIT = currentUser.role === 'it';
+  let list = isIT ? tickets : tickets.filter(t=>t.requester===currentUser.id);
+  const sf = filters['status-chips']||'all';
+  const pf = filters['prio-chips']||'all';
+  const q = (document.getElementById('tsearch')?.value||'').toLowerCase();
+  if(sf!=='all') list = list.filter(t=>t.status===sf);
+  if(pf!=='all') list = list.filter(t=>t.prio===pf);
+  if(q) list = list.filter(t=>t.subject.toLowerCase().includes(q)||t.id.toLowerCase().includes(q)||getUserName(t.requester).toLowerCase().includes(q));
+  list = list.slice().sort((a,b)=>b.created-a.created);
+  const el = document.getElementById('tickets-list');
+  el.innerHTML = list.length ? list.map(tCardHTML).join('') : '<div class="empty"><i class="ti ti-search" aria-hidden="true"></i><p>No tickets match your filter</p></div>';
+}
+
+// ===================== OPEN TICKET DETAIL =====================
+let activeTicket = null;
+function openTicket(id){
+  const tickets = DB.get('tickets')||[];
+  activeTicket = tickets.find(t=>t.id===id);
+  if(!activeTicket) return;
+  const t = activeTicket;
+  const isIT = currentUser.role==='it';
+  document.getElementById('m-id').textContent = t.id + ' · ' + t.cat;
+  document.getElementById('m-title').textContent = t.subject;
+  document.getElementById('m-status').className = 'badge '+({'Open':'b-open','Pending':'b-pending','Resolved':'b-resolved','Closed':'b-closed'}[t.status]||'b-open');
+  document.getElementById('m-status').textContent = t.status;
+  document.getElementById('m-details').innerHTML = `
+    <div class="drow"><span class="dlabel">Priority</span><span class="dval">${prioBadge(t.prio)}</span></div>
+    <div class="drow"><span class="dlabel">Requester</span><span class="dval">${getUserName(t.requester)} · ${t.dept}</span></div>
+    <div class="drow"><span class="dlabel">Assignee</span><span class="dval">${t.assignee?getUserName(t.assignee):'<span style="color:var(--amber)">Unassigned</span>'}</span></div>
+    <div class="drow"><span class="dlabel">Created</span><span class="dval">${timeAgo(t.created)}</span></div>
+    <div style="padding:12px 0;font-size:13px;color:var(--text2);line-height:1.6;border-bottom:1px solid var(--border)">${t.desc}</div>`;
+  const tl = document.getElementById('m-timeline');
+  const notes = [{by:t.requester, text:'Ticket submitted: '+t.subject, time:t.created, system:true}, ...(t.notes||[])];
+  tl.innerHTML = notes.map(n=>`<div class="tl-item"><div class="tl-dot" style="${n.system?'background:var(--text3)':''}"></div><div class="tl-time">${timeAgo(n.time)}</div><div class="tl-text"><b>${getUserName(n.by)}:</b> ${n.text}</div></div>`).join('');
+  // SLA
+  const elapsed = Date.now()-t.created;
+  const slaMs = slaHours(t.prio)*3600000;
+  const pct = Math.min(100, Math.round(elapsed/slaMs*100));
+  const slaColor = pct>=100?'var(--red)':pct>75?'var(--amber)':'var(--green)';
+  document.getElementById('m-sla').innerHTML = `
+    <div class="drow"><span class="dlabel">SLA Limit</span><span class="dval">${slaHours(t.prio)}h for ${t.prio}</span></div>
+    <div class="drow"><span class="dlabel">Elapsed</span><span class="dval" style="color:${slaColor}">${Math.round(elapsed/3600000*10)/10}h (${pct}%)</span></div>
+    <div class="sla-bar" style="margin-top:8px"><div class="sla-fill" style="width:${pct}%;background:${slaColor}"></div></div>`;
+  document.getElementById('m-it-actions').style.display = isIT ? 'block' : 'none';
+  if(isIT){
+    const sel = document.getElementById('m-assign');
+    sel.innerHTML = '<option value="">Unassigned</option>' +
+      (DB.get('users')||[]).filter(u=>u.role==='it').map(u=>`<option value="${u.id}"${u.id===t.assignee?' selected':''}>${u.name}</option>`).join('');
+  }
+  document.getElementById('ticket-modal').classList.add('open');
+}
+
+function modalBgClose(e){ if(e.target===document.getElementById('ticket-modal')) document.getElementById('ticket-modal').classList.remove('open'); }
+
+function addNote(){
+  const text = document.getElementById('m-note').value.trim();
+  if(!text||!activeTicket) return;
+  const tickets = DB.get('tickets')||[];
+  const t = tickets.find(x=>x.id===activeTicket.id);
+  if(!t) return;
+  const note = {by:currentUser.id, text, time:Date.now()};
+  t.notes = t.notes||[]; t.notes.push(note); t.updated = Date.now();
+  DB.set('tickets',tickets);
+  document.getElementById('m-note').value='';
+  openTicket(t.id);
+  toast('Note added');
+}
+
+function changeStatus(status){
+  if(!activeTicket) return;
+  const tickets = DB.get('tickets')||[];
+  const t = tickets.find(x=>x.id===activeTicket.id);
+  if(!t) return;
+  t.status = status; t.updated = Date.now();
+  t.notes = t.notes||[];
+  t.notes.push({by:currentUser.id, text:`Status changed to ${status}.`, time:Date.now()});
+  DB.set('tickets',tickets);
+  openTicket(t.id);
+  refreshAll();
+  toast('Status updated to '+status);
+}
+
+function assignTicket(){
+  const techId = document.getElementById('m-assign').value;
+  if(!activeTicket) return;
+  const tickets = DB.get('tickets')||[];
+  const t = tickets.find(x=>x.id===activeTicket.id);
+  if(!t) return;
+  t.assignee = techId; t.updated = Date.now();
+  t.notes = t.notes||[];
+  t.notes.push({by:currentUser.id, text:`Assigned to ${techId?getUserName(techId):'nobody'}.`, time:Date.now()});
+  DB.set('tickets',tickets);
+  openTicket(t.id);
+  toast('Assigned to '+(techId?getUserName(techId):'nobody'));
+}
+
+// ===================== NEW TICKET =====================
+function submitTicket(){
+  const subject = document.getElementById('nt-subject').value.trim();
+  const cat = document.getElementById('nt-cat').value;
+  const prio = document.getElementById('nt-prio').value;
+  const desc = document.getElementById('nt-desc').value.trim();
+  const err = document.getElementById('nt-err');
+  if(!subject||!cat){ err.textContent='Subject and category are required.'; err.style.display='block'; return; }
+  err.style.display='none';
+  const btn = document.getElementById('nt-btn');
+  btn.disabled=true; btn.innerHTML='<div class="spin" style="margin:0 2px"></div> Submitting…';
+  setTimeout(()=>{
+    const assignee = currentUser.role==='it' ? document.getElementById('nt-assign').value : '';
+    const tickets = DB.get('tickets')||[];
+    const t = {id:nextId(),subject,cat,prio,status:'Open',requester:currentUser.id,assignee,dept:currentUser.dept,desc,created:Date.now(),updated:Date.now(),notes:[]};
+    tickets.unshift(t); DB.set('tickets',tickets);
+    // Add notification
+    const notifs = DB.get('notifs')||[];
+    notifs.unshift({icon:'ti-ticket',color:'accent',text:`<b>New ticket:</b> ${t.id} — ${subject}`,time:Date.now(),unread:true});
+    DB.set('notifs',notifs);
+    document.getElementById('nt-subject').value='';
+    document.getElementById('nt-desc').value='';
+    document.getElementById('nt-cat').value='';
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-send"></i> Submit Ticket';
+    refreshAll();
+    toast('Ticket '+t.id+' submitted!');
+    gotoScreen('dashboard');
+  }, 600);
+}
+
+// ===================== APPROVALS =====================
+function renderApprovals(){
+  const aprs = DB.get('approvals')||[];
+  const activeTab = tabStates['apr']||'pending';
+  const list = aprs.filter(a=>a.status===activeTab);
+  const el = document.getElementById('approvals-list');
+  if(!list.length){
+    el.innerHTML = '<div class="empty"><i class="ti ti-clipboard-check" aria-hidden="true"></i><p>No '+activeTab+' approvals</p></div>';
+    return;
+  }
+  el.innerHTML = list.map(a=>`<div class="apr-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div class="tid">${a.id} · ${a.type}</div>
+        <div style="font-size:14px;font-weight:500;margin-top:5px;line-height:1.4">${a.title}</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:5px"><i class="ti ti-user" aria-hidden="true"></i> ${getUserName(a.requester)} · ${timeAgo(a.date)}</div>
+      </div>
+    </div>
+    ${a.status==='pending'?`
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-success btn-sm" onclick="doApproval('${a.id}','approved')"><i class="ti ti-check"></i> Approve</button>
+      <button class="btn btn-danger btn-sm" onclick="doApproval('${a.id}','rejected')"><i class="ti ti-x"></i> Reject</button>
+    </div>` : `<div style="margin-top:10px">${statusBadge(a.status==='approved'?'Resolved':'Closed')}</div>`}
+  </div>`).join('');
+}
+
+function doApproval(id, status){
+  const aprs = DB.get('approvals')||[];
+  const a = aprs.find(x=>x.id===id);
+  if(a){ a.status=status; DB.set('approvals',aprs); renderApprovals(); refreshAll(); toast(id+' '+status); }
+}
+
+// ===================== NOTIFICATIONS =====================
+function renderNotifications(){
+  const notifs = DB.get('notifs')||[];
+  const colors = {red:'var(--red-light)',green:'var(--green-light)',amber:'var(--amber-light)',accent:'var(--accent-light)',violet:'var(--violet-light)'};
+  const textColors = {red:'var(--red)',green:'var(--green)',amber:'var(--amber)',accent:'var(--accent)',violet:'var(--violet)'};
+  document.getElementById('notif-list').innerHTML = notifs.length ? notifs.map(n=>`
+    <div class="notif${n.unread?' unread':''}">
+      <div class="nicon" style="background:${colors[n.color]||colors.accent};color:${textColors[n.color]||textColors.accent}"><i class="ti ${n.icon}" aria-hidden="true"></i></div>
+      <div><div class="ntext">${n.text}</div><div class="ntime">${timeAgo(n.time)}</div></div>
+    </div>`).join('') : '<div class="empty"><i class="ti ti-bell" aria-hidden="true"></i><p>No notifications</p></div>';
+  // Mark all read
+  const updated = notifs.map(n=>({...n,unread:false}));
+  DB.set('notifs',updated);
+  document.getElementById('ndot').style.display='none';
+}
+
+// ===================== TOAST =====================
+function toast(msg){
+  const t = document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); },2200);
+}
+
+function showThemeToggle(){ toast('Theme follows your system setting (Settings → Display)'); }
+
+// ===================== BOOT =====================
+initData();
+checkSession();
+</script>
+</body>
+</html>
